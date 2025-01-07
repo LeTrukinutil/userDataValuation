@@ -12,7 +12,7 @@
     <!-- Header -->
     <header class="bg-white shadow">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold text-blue-500">MonApp</a>
+            <a href="/" class="text-2xl font-bold text-blue-500">Business Lookup</a>
             <nav>
                 <ul class="flex space-x-4">
                     <li><a href="#" class="text-gray-700 hover:text-blue-500">Accueil</a></li>
