@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class CompanySearchController extends Controller
+class CompanyController extends Controller
 {
     public function search(Request $request)
     {
@@ -43,5 +43,10 @@ class CompanySearchController extends Controller
             'query' => $query,
             'total_results' => $results['total_results'],
         ]);
+    }
+
+
+    public function show(string $siren){
+        
     }
 }

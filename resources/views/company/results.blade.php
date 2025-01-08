@@ -28,7 +28,7 @@
                 </p>
             </div>
 
-            <!-- Results List -->
+            <!-- Company list and their informations -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @if (!empty($results))
                     @forelse ($results as $company)
@@ -39,7 +39,6 @@
                             <p class="text-gray-600">{{ $company['siege']['adresse'] ?? 'Adresse non disponible' }}</p>
                             <p class="text-sm text-gray-500">SIRET : {{ $company['siege']['siret'] ?? 'N/A' }}</p>
 
-                            <!-- Dirigeant Information -->
                             @if (isset($company['dirigeants']) && count($company['dirigeants']) > 0)
                                 <div class="flex items-center mt-2 text-sm text-gray-700">
                                     <i class="fas fa-user-tie mr-2"></i>
@@ -48,19 +47,24 @@
                                         {{ $company['dirigeants'][0]['prenoms'] ?? 'Non disponible' }}</span>
                                 </div>
                             @endif
-
-                            <!-- Code NAF / APE -->
                             <div class="flex items-center mt-2 text-sm text-gray-700">
                                 <i class="fas fa-cogs mr-2"></i>
                                 <span><strong>Code NAF / APE :</strong>
                                     {{ $company['siege']['activite_principale'] ?? 'Non renseigné' }}</span>
                             </div>
-
-                            <!-- Description -->
                             <div class="mt-2 text-sm text-gray-600">
                                 <strong>Description : </strong>
                                 {{ $company['siege']['activite_principale'] == '43.22B' ? 'Travaux de construction spécialisés dans les activités de gros œuvre.' : 'Description non disponible.' }}
                             </div>
+
+                            <div class="mt-4">
+                                <a href="{{ route('company.show', ['siren' => $company['siren']]) }}" 
+                                   class="text-blue-500 underline hover:text-blue-600 text-sm font-medium transition-all duration-200">
+                                    Voir les établissements ({{ count($company['matching_etablissements'])}})
+                                </a>
+                                
+                            </div>
+                            
                         </div>
                     @empty
                         <p class="text-center text-gray-500">Aucun résultat trouvé.</p>
