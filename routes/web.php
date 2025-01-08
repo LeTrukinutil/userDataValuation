@@ -17,7 +17,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/search', [CompanyController::class, 'search'])->name('search');
     Route::get('/', function(){
-        return view('research');
+        return view('company.research');
     })->name('dashboard');
     Route::get('/company/{siren}', [CompanyController::class, 'show'])->name('company.show');
 });

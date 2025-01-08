@@ -22,21 +22,19 @@ class CompanyController extends Controller
 
         // Appeler l'API
         $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
-    
-        // Vérifier si la réponse est réussie
+
         if ($response->successful()) {
             $results = $response->json();
 
-            // Calcul des pages totales
             $total_results = $results['total_results'] ?? 0;
             $total_pages = ceil($total_results / 6); // Calcul des pages totales
-
+            session(['search_results' => $results['results'] ?? []]);
         } else {
             return back()->withErrors(['query' => 'Erreur lors de la recherche.']);
         }
 
         // Retourner les résultats avec pagination
-        return view('results', [
+        return view('company.results', [
             'results' => $results['results'] ?? [],  // Accéder à 'results' au lieu de 'items'
             'current_page' => $params['page'],
             'total_pages' => $total_pages, // Ne limite plus à 6 pages
@@ -46,7 +44,13 @@ class CompanyController extends Controller
     }
 
 
-    public function show(string $siren){
-        
+    public function show(string $siren)
+    {
+        $searchResults = session('search_results', []);
+        $company = collect($searchResults)->firstWhere('siren', $siren);
+        if (!$company) {
+            return back()->withErrors(['siren' => 'Entreprise non trouvée.']);
+        }
+        return view('company.show', ['company' => $company]);
     }
 }

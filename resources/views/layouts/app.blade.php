@@ -17,7 +17,7 @@
             <div class="flex justify-between h-20">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('dashboard') }}" class="text-3xl font-bold text-blue-500">
+                    <a href="/" class="text-3xl font-bold text-blue-500">
                         Business Lookup
                     </a>
                 </div>

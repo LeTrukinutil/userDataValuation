@@ -60,7 +60,7 @@
                             <div class="mt-4">
                                 <a href="{{ route('company.show', ['siren' => $company['siren']]) }}" 
                                    class="text-blue-500 underline hover:text-blue-600 text-sm font-medium transition-all duration-200">
-                                    Voir les établissements ({{ count($company['matching_etablissements'])}})
+                                    Voir les établissements correspondants ({{ count($company['matching_etablissements'])}})
                                 </a>
                                 
                             </div>
