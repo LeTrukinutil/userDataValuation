@@ -16,33 +16,78 @@ Ce projet a été développé dans le cadre d'un hackathon de 4 jours pendant ma
 - Base de données: MySql
 - API externes intégrées
 
+## Prérequis
+
+### Environnement de développement (ce sont les version que j'utilise)
+- PHP >= 8.2.12
+- Composer >= 2.7.9
+- Node.js >= 21.4.0
+- NPM >= 10.2.4
+- Laravel >= 11.37.0
+
+### Serveur
+- Serveur web Apache/Nginx
+
+### Base de données (mes versions)
+- MariaDB >= 10.4.32
+- Un utilisateur avec droits d'administration
+
+
 ## Installation
 1. Cloner le repository
 ```bash
-git clone [url-du-repo]
+git clone [https://github.com/LeTrukinutil/userDataValuation.git]
+```
+2. Installez les dépendances PHP
+```bash
+composer install
 ```
 
-2. Installer les dépendances
+3. Installez les dépendances front-end
 ```bash
 npm install
 ```
 
-3. Configurer la base de données
-- Importer le fichier de backup fourni dans le dossier `database`
-
-4. Configurer les variables d'environnement
+4. Configurez l'environnement
 ```bash
+# Créer le fichier .env
 cp .env.example .env
-# Modifier les variables dans .env
+
+# Générer la clé d'application
+php artisan key:generate
 ```
 
-5. Lancer l'application
-```bash
-npm start
+5. Configurez la base de données dans .env
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nom_de_la_base
+DB_USERNAME=utilisateur
+DB_PASSWORD=mot_de_passe
 ```
+
+6. Initialisez la base de données en exécutant le script SQL `scriptBddBusinessLookup.sql` situé à la racine du projet. Bien que cette méthode ne soit pas optimale, elle est suffisante pour une version initiale (v1) afin de gagner du temps et de simplifier le processus.
+
+7. Compilez les assets
+```bash
+# Mode développement
+npm run dev
+
+# Mode production
+npm run build
+```
+
+8. Démarrez l'application
+```bash
+php artisan serve
+```
+
+9. Accédez à l'application via http://localhost:8000
+
 
 ## Améliorations Futures Possibles
-- Automatisation de l'import CSV avec un système de watch folder
+- Automatisation de l'import CSV avec un système de watch folder (ici )
 - Historique des recherches et entreprises consultées 
 - Système de notifications pour les mises à jour importantes
 - Export de rapports personnalisés
