@@ -18,7 +18,7 @@ Ce projet a été développé dans le cadre d'un hackathon de 4 jours pendant ma
 
 ## Prérequis
 
-### Environnement de développement (ce sont les version que j'utilise)
+### Environnement de Développement (versions utilisées)
 - PHP >= 8.2.12
 - Composer >= 2.7.9
 - Node.js >= 21.4.0
@@ -28,7 +28,7 @@ Ce projet a été développé dans le cadre d'un hackathon de 4 jours pendant ma
 ### Serveur
 - Serveur web Apache/Nginx
 
-### Base de données (mes versions)
+### Base de données (versions utilisées)
 - MariaDB >= 10.4.32
 - Un utilisateur avec droits d'administration
 
@@ -73,9 +73,11 @@ DB_PASSWORD=mot_de_passe
 ```bash
 # Mode développement
 npm run dev
+```
 
+```bash
 # Mode production
-npm run build
+npm run prod
 ```
 
 8. Démarrez l'application
