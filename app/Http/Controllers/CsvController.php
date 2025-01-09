@@ -12,15 +12,38 @@ class CsvController extends Controller
 {
     public function show()
     {
-        return view('csv.upload');
+        // Association des libellés utilisateur avec les champs techniques
+        $csvHeaders = [
+            'Nom ou Dénomination sociale' => 'nom_complet',
+            'Adresse complète' => 'adresse',
+            'Code postal' => 'code_postal',
+            'Ville' => 'ville',
+            'Secteur d\'activité (Code APE)' => 'activite_principale',
+            'Taille de l\'entreprise' => 'effectif',
+            'Date de création' => 'date_creation',
+            'Dirigeant principal' => 'dirigeant',
+            'Catégorie d\'entreprise' => 'categorie_entreprise',
+            'Forme juridique' => 'nature_juridique',
+        ];
+
+        return view('csv.upload', ['csvHeaders' => $csvHeaders]);
     }
 
     public function dataCompletion(Request $request)
     {
-        // Validate file upload
+        // Validate file upload with custom messages
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt'
-        ]);
+            'csv_file' => 'required|file|mimes:csv,txt',
+            'selected_fields' => 'required|array|min:1'
+        ], [
+            'csv_file.required' => 'Veuillez sélectionner un fichier CSV',
+            'csv_file.file' => 'Le document doit être un fichier',
+            'csv_file.mimes' => 'Le fichier doit être au format CSV',
+            'selected_fields.required' => 'Veuillez sélectionner au moins un champ à extraire',
+            'selected_fields.array' => 'Format de sélection invalide',
+            'selected_fields.min' => 'Veuillez sélectionner au moins un champ à extraire'
+        ]); // globalement, je sais pas pourquoi, mais je n'arrive pas à les afficher 
+
         $originalName = pathinfo($request->file('csv_file')->getClientOriginalName(), PATHINFO_FILENAME);
         
         // Read CSV file
@@ -49,10 +72,11 @@ class CsvController extends Controller
                 return back()->withErrors(['message' => 'Le numéro à la ligne ' . ($index + 2) . ' doit contenir exactement 9 chiffres']);
             }
         }
-        // Prepare output data
-        $output = [
-            ['siren', 'nom_entreprise', 'code_ape', 'adresse', 'dirigeant']
-        ];
+
+
+        // Prepare output data with descriptive headers
+            $headers = array_merge(['SIREN'], $request->selected_fields);
+        $output = [$headers]; // Start with headers as first row
 
         // Process each row
         foreach (array_slice($data, 1) as $row) {
@@ -66,24 +90,34 @@ class CsvController extends Controller
 
                 if (isset($result['results'][0])) {
                     $company = $result['results'][0];
-
-                    // Extract required information
-                    $companyData = [
-                        $siren,
-                        $company['nom_raison_sociale'] ?? 'N/A',
-                        $company['siege']['activite_principale'] ?? 'N/A',
-                        $company['siege']['adresse'] ?? 'N/A',
-                        // Get first dirigeant if available
-                        !empty($company['dirigeants']) ?
-                            ($company['dirigeants'][0]['nom'] ?? '') . ' ' . ($company['dirigeants'][0]['prenoms'] ?? '')
-                            : 'N/A'
-                    ];
-
+                    $companyData = [$siren]; // Start with SIREN
+                    // Add selected fields
+                    foreach ($request->selected_fields as $field) {
+                        $companyData[] = match($field) {
+                            'nom_complet' => $company['nom_complet'] ?? 'N/A',
+                            'adresse' => $company['siege']['adresse'] ?? 'N/A',
+                            'code_postal' => $company['siege']['code_postal'] ?? 'N/A',
+                            'ville' => $company['siege']['ville'] ?? 'N/A',
+                            'activite_principale' => $company['siege']['activite_principale'] ?? 'N/A',
+                            'effectif' => $company['tranche_effectif_salarie'] ?? 'N/A',
+                            'date_creation' => $company['date_creation'] ?? 'N/A',
+                            'dirigeant' => !empty($company['dirigeants']) 
+                                ? ($company['dirigeants'][0]['nom'] ?? '') . ' ' . ($company['dirigeants'][0]['prenoms'] ?? '')
+                                : 'N/A',
+                            'categorie_entreprise' => $company['categorie_entreprise'] ?? 'N/A',
+                            'nature_juridique' => $company['nature_juridique'] ?? 'N/A',
+                            default => 'N/A'
+                        };
+                    }
                     $output[] = $companyData;
                 }
             } catch (\Exception $e) {
                 Log::error("Erreur pour le SIREN $siren: " . $e->getMessage());
-                $output[] = [$siren, 'Erreur', 'Erreur', 'Erreur', 'Erreur'];
+                // Créer un tableau d'erreurs de la même taille que les champs sélectionnés
+                $output[] = array_merge(
+                    [$siren], 
+                    array_fill(0, count($request->selected_fields), 'Erreur')
+                );
             }
         }
 
