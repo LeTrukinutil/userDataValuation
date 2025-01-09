@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -51,6 +52,8 @@ class CompanyController extends Controller
         if (!$company) {
             return back()->withErrors(['siren' => 'Entreprise non trouvée.']);
         }
-        return view('company.show', ['company' => $company]);
+        $comments = Comment::where('siren', $company['siren']);
+        dd($comments);
+        return view('company.show', ['company' => $company, 'comments' => $comments]);
     }
 }

@@ -32,6 +32,7 @@ class Company extends Model
 	];
 
 	protected $fillable = [
+		'siren',
 		'name',
 		'rating'
 	];

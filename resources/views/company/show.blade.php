@@ -237,12 +237,50 @@
         @endif
 
         <!-- Commment section -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 class="text-2xl font-bold text-blue-800">Commentaires</h2>
 
+            <div class="mt-4 space-y-4">
+                @foreach ($comments as $comment)
+                    <div class="border-b pb-4">
+                        <div class="flex items-center mb-2">
+                            <div class="flex-shrink-0">
+                                <!-- Vous pouvez personnaliser l'image de l'utilisateur ici -->
+                                <img src="{{ asset('img/default-avatar.png') }}" alt="Avatar"
+                                    class="h-8 w-8 rounded-full">
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-800">{{ $comment->user->name }}</p>
+                                <p class="text-xs text-gray-500">
+                                    {{ \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y à H:i') }}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-700">{{ $comment->content }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Add comment form -->
+
+        <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h3 class="text-xl font-bold text-blue-800">Laissez un commentaire</h3>
+            <form action="{{ route('comment.store', $company['siren']) }}" method="POST" class="mt-4">
+                @csrf
+                <div class="space-y-2">
+                    <textarea name="content" rows="4" class="w-full border border-gray-300 rounded-md p-3 text-sm"
+                        placeholder="Votre commentaire..." required></textarea>
+                </div>
+                <div class="mt-4 text-right">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Ajouter un commentaire</button>
+                </div>
+            </form>
+        </div>
     </div>
     <script>
         document.getElementById('back-link').onclick = (e) => {
             e.preventDefault();
             history.back();
         };
-    </script>   
+    </script>
 @endsection

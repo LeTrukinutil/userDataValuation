@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanySearchController;
 use App\Http\Controllers\ProfileController;
@@ -20,6 +21,7 @@ Route::middleware('auth')->group(function () {
         return view('company.research');
     })->name('dashboard');
     Route::get('/company/{siren}', [CompanyController::class, 'show'])->name('company.show');
+    Route::post('/company/{siren}/comments', [CommentsController::class, 'store'])->name('comment.store');
 });
 
 require __DIR__.'/auth.php';
