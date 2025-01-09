@@ -21,34 +21,19 @@
                         Business Lookup
                     </a>
                 </div>
-
-                <div class="flex items-center">
-                    <div class="ml-8 relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-2 text-gray-700 hover:text-blue-500">
-                            <i class="fas fa-user text-xl"></i>
-                            <div class="font-medium text-base">{{ Auth::user()->name }}</div>
-                            <i class="fas fa-chevron-down text-sm"></i>
-                        </button>
-                
-                        <div x-show="open" 
-                             @click.away="open = false"
-                             class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                            <a href="{{ route('profile.edit') }}"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-user-cog mr-2"></i>{{ __('Profile') }}
-                            </a>
-                
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <a href="{{ route('logout') }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    onclick="event.preventDefault(); this.closest('form').submit();">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>{{ __('Déconnexion') }}
-                                </a>
-                            </form>
-                        </div>
-                    </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Profile Link -->
+                    <a href="{{ route('profile.edit') }}"
+                        class="flex items-center space-x-2 text-gray-700 hover:text-blue-500">
+                        <i class="fas fa-user text-xl"></i>
+                        <span class="font-medium text-base">{{ Auth::user()->name }}</span>
+                    </a>
+                    <a href="/logout"
+                        class="text-gray-700 hover:text-blue-500">
+                        <i class="fas fa-sign-out-alt text-xl"></i>
+                    </a>
                 </div>
+
 
             </div>
         </div>

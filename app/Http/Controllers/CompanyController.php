@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\ApeNafCode;
 use App\Models\Comment;
-use App\Models\Company;
 use App\Models\CompanyType;
 use App\Models\LegalCategory;
 use Illuminate\Http\Request;
@@ -27,16 +26,20 @@ class CompanyController extends Controller
         ];
 
         // Appeler l'API
-        $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
+        try {
+            $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
 
-        if ($response->successful()) {
-            $results = $response->json();
-
-            $total_results = $results['total_results'] ?? 0;
-            $total_pages = ceil($total_results / 6); // Calcul des pages totales
-            session(['search_results' => $results['results'] ?? []]);
-        } else {
-            return back()->withErrors(['query' => 'Erreur lors de la recherche.']);
+            if ($response->successful()) {
+                $results = $response->json();
+            $total_results = isset($results['total_results']) ? $results['total_results'] : 0;
+                $total_results = $results['total_results'] ?? 0;
+                $total_pages = ceil($total_results / 6); // Calcul des pages totales
+                session(['search_results_page_' . $params['page'] => $results['results'] ?? []]);
+            } else {
+                return back()->withErrors(['query' => 'Erreur lors de la recherche.']);
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['query' => 'Erreur lors de la recherche: ' . $e->getMessage()]);
         }
 
         $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();
@@ -46,7 +49,7 @@ class CompanyController extends Controller
             'current_page' => $params['page'],
             'total_pages' => $total_pages, // Ne limite plus à 6 pages
             'query' => $query,
-            'total_results' => $results['total_results'],
+            'total_results' => $results['total_results'] ?? 0,
             'naf_codes' => $naf_codes,
         ]);
     }
@@ -54,7 +57,8 @@ class CompanyController extends Controller
 
     public function show(string $siren)
     {
-        $searchResults = session('search_results', []);
+        $currentPage = request()->input('page', 1);
+        $searchResults = session('search_results_page_' . $currentPage, []);
         $company = collect($searchResults)->firstWhere('siren', $siren);
         if (!$company) {
             return back()->withErrors(['siren' => 'Entreprise non trouvée.']);

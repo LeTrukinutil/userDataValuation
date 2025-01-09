@@ -10,6 +10,16 @@
                 Importation de fichier CSV
             </h1>
 
+            <div class="text-gray-600 text-center mb-8 space-y-4">
+                <p>
+                    Cette application vous permet d'enrichir automatiquement les données de vos clients à partir de leurs numéros SIREN.
+                </p>
+                <p>
+                    Importez un fichier CSV contenant une liste de SIREN, et recevez instantanément un nouveau fichier enrichi 
+                    contenant les informations détaillées de chaque entreprise : nom, code APE, adresse et dirigeant principal.
+                </p>
+            </div>
+
             <!-- Instructions -->
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
                 <div class="flex items-center">
@@ -86,6 +96,9 @@
                     Importer le fichier
                 </button>
             </form>
+            <p class="text-sm">
+                Les données sont récupérées en temps réel depuis la base de données officielle de l'INSEE. Récupérées par l'<a href="https://api.gouv.fr" class="text-blue-500 underline">API gouvernementale</a>.
+            </p>
         </div>
     </div>
 @endsection

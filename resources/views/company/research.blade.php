@@ -55,7 +55,7 @@
                 <a href="{{ route('csv.upload') }}"
                     class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">
                     <i class="fa-solid fa-file-csv mr-2"></i>
-                    Compléter un fichier CSV
+                    Rechercher en masse via un fichier CSV
                 </a>
             </div>
         </div>
