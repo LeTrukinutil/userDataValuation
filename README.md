@@ -89,8 +89,9 @@ php artisan serve
 
 
 ## Améliorations Futures Possibles
-- Automatisation de l'import CSV avec un système de watch folder (ici )
-- Historique des recherches et entreprises consultées 
+- Migration et seeding de la base de données avec les commandes artisan de Laravel pour améliorer et professionnaliser l'installation (au lieu d'utiliser un script SQL)
+- Historique des recherches et entreprises consultées
+- Système de favoris (entreprises) pour faciliter l'accès aux clients d'un commercial 
 - Système de notifications pour les mises à jour importantes
 - Export de rapports personnalisés
 - Système de tags et catégorisation avancée pour pouvoir filter une recherche par taille d'entreprise par exemple 
