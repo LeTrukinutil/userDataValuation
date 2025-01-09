@@ -3,13 +3,20 @@
 @section('title', 'Résultats de recherche')
 
 @section('content')
+    @php
+        $adresse = urlencode($company['siege']['adresse']);
+    @endphp
     <div class="max-w-full min-w-[80%] mx-auto py-6 px-2 sm:px-4 lg:px-6">
+        <div class="mb-6">
+            <a href="/search" id="back-link" class="flex items-center text-blue-600 hover:text-blue-800">
+                <i class="fas fa-arrow-left mr-2"></i> Retour à la liste des résultats
+            </a>
+        </div>
         <!-- Main information -->
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-blue-800 mr-2">Informations légales de {{ $company['nom_complet'] }}</h1>
                 <div class="flex gap-4">
-    
                     <img src="{{ asset('img/insee.svg') }}" alt="Insee" class="h-8">
                     <img src="{{ asset('img/vies.svg') }}" alt="EU" class="h-8">
                     <img src="{{ asset('img/inpi.svg') }}" alt="INPI" class="h-8">
@@ -38,7 +45,6 @@
                     <div class="flex justify-between">
                         <h3 class="text-sm font-medium text-gray-500">N° TVA Intracommunautaire</h3>
                         <p class="mt-1">
-                            <i class="fas fa-circle-check text-amber-500 mr-2"></i>
                             FR{{ $company['siren'] }}
                         </p>
                     </div>
@@ -97,7 +103,8 @@
                         <h3 class="text-lg mt-6 font-bold text-blue-800">État d'inscription</h3>
                         <div class="flex items-center">
                             <i class="fas fa-circle-check text-green-500 mr-3"></i>
-                            <span>Inscrite (Insee) le {{ \Carbon\Carbon::parse($company['date_creation'])->format('d/m/Y') }}</span>
+                            <span>Inscrite (Insee) le
+                                {{ \Carbon\Carbon::parse($company['date_creation'])->format('d/m/Y') }}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-circle-check text-green-500 mr-3"></i>
@@ -112,43 +119,49 @@
         <!-- Head office -->
         <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
             <div class="space-y-4">
+                <h1 class="text-2xl font-bold text-blue-800 mr-2">Siege social de {{ $company['nom_complet'] }}</h1>
                 <div class="flex justify-between">
                     <h3 class="text-lg  font-medium text-gray-500">Adresse</h3>
-                    <p class="mt-1">{{ $company['siege']['adresse'] }}</p>
+                    <div>
+                        <p class="mt-1">{{ $company['siege']['adresse'] }}</p>
+                        <a href="https://www.google.com/maps?q={{ $adresse }}" target="_blank"
+                            class="group inline-flex items-center text-blue-600 underline underline-offset-2 hover:underline-offset-4 hover:decoration-2 transition">
+                            → Voir sur la carte
+                        </a>
+                    </div>
                 </div>
-        
+
                 <div class="flex justify-between">
                     <h3 class="text-lg font-medium text-gray-500">SIRET</h3>
                     <p class="mt-2">{{ $company['siege']['siret'] }}</p>
                 </div>
-        
+
                 <div class="flex justify-between">
                     <h3 class="text-lg font-medium text-gray-500">Clé NIC</h3>
                     <p class="mt-1">{{ substr($company['siege']['siret'], -5) }}</p>
                 </div>
-        
+
                 <div class="flex justify-between">
                     <h3 class="text-lg font-medium text-gray-500">Activité principale de l'établissement</h3>
                     <p class="mt-1">{{ $company['siege']['activite_principale'] }}</p>
                 </div>
-        
+
                 <div class="flex justify-between">
                     <h3 class="text-lg font-medium text-gray-500">Forme juridique</h3>
                     <p class="mt-1">{{ $company['nature_juridique'] }}</p>
                 </div>
-        
+
                 <div class="flex justify-between">
                     <h3 class="text-lg font-medium text-gray-500">Date de création de la société</h3>
                     <p class="mt-1">{{ \Carbon\Carbon::parse($company['date_creation'])->format('d/m/Y') }}</p>
                 </div>
-        
+
                 <div class="flex justify-between">
                     <h3 class="text-lg font-medium text-gray-500">Date de création de l'établissement</h3>
                     <p class="mt-1">{{ \Carbon\Carbon::parse($company['siege']['date_creation'])->format('d/m/Y') }}</p>
                 </div>
             </div>
         </div>
-    
 
         <!-- List of establishments matching the search -->
         @if (count($company['matching_etablissements']) > 0)
@@ -157,7 +170,7 @@
                     <p class="text-gray-700">
                         Cette structure possède
                         <span class="font-semibold">{{ count($company['matching_etablissements']) }}
-                            établissement(s)</span>
+                            établissement(s)</span><b> correspondant à la recherche </b>
                         dont
                         {{ count(array_filter($company['matching_etablissements'], fn($e) => $e['etat_administratif'] === 'A')) }}
                         est en activité.
@@ -223,6 +236,13 @@
             </div>
         @endif
 
-    </div>
+        <!-- Commment section -->
 
+    </div>
+    <script>
+        document.getElementById('back-link').onclick = (e) => {
+            e.preventDefault();
+            history.back();
+        };
+    </script>   
 @endsection
