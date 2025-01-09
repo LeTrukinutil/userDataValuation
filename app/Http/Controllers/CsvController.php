@@ -42,7 +42,7 @@ class CsvController extends Controller
             'selected_fields.required' => 'Veuillez sélectionner au moins un champ à extraire',
             'selected_fields.array' => 'Format de sélection invalide',
             'selected_fields.min' => 'Veuillez sélectionner au moins un champ à extraire'
-        ]); // globalement, je sais pas pourquoi, mais je n'arrive pas à les afficher 
+        ]); //  globalement, je sais pas pourquoi, mais je n'arrive pas à les afficher 
 
         $originalName = pathinfo($request->file('csv_file')->getClientOriginalName(), PATHINFO_FILENAME);
         
