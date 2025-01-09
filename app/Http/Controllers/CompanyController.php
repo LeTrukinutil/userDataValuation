@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ApeNafCode;
 use App\Models\Comment;
+use App\Models\Company;
+use App\Models\CompanyType;
+use App\Models\LegalCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -56,8 +59,18 @@ class CompanyController extends Controller
         if (!$company) {
             return back()->withErrors(['siren' => 'Entreprise non trouvée.']);
         }
-        $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();
+
         $comments = Comment::where('siren', $company['siren'])->get();
-        return view('company.show', ['company' => $company, 'comments' => $comments, 'naf_codes' => $naf_codes]);
+        $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();   
+        $fj = LegalCategory::all()->pluck('label', 'code')->toArray();
+        $ct = CompanyType::all()->pluck('label', 'code')->toArray();
+
+        return view('company.show', [
+            'company' => $company, 
+            'comments' => $comments, 
+            'naf_codes' => $naf_codes,
+            'fj' => $fj,
+            'ct' => $ct,
+        ]);
     }
 }

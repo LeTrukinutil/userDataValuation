@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanySearchController;
+use App\Http\Controllers\CsvController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,9 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
     Route::get('/company/{siren}', [CompanyController::class, 'show'])->name('company.show');
     Route::post('/company/{siren}/comments', [CommentsController::class, 'store'])->name('comment.store');
+    Route::get('/csv-upload', [CsvController::class, 'show'])->name('csv.upload');
+    Route::post('/csv-upload', [CsvController::class, 'dataCompletion'])->name('csv.process');
+
 });
 
 require __DIR__.'/auth.php';

@@ -26,7 +26,6 @@ class CommentsController extends Controller
 
         if (!$company) {
             $params = ['q' => $siren];
-
             $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
             if ($response->successful()) {
                 $apiCompany  = $response->json()['results']['0'];
