@@ -71,13 +71,13 @@
 
                     <div class="flex justify-between">
                         <h3 class="text-sm font-medium text-gray-500">Forme juridique</h3>
-                        <p class="mt-1">{{ $company['nature_juridique'] ?: '<i>non renseigné</i>' }}</p>
+                        <p class="mt-1">{{ $fj[$company['nature_juridique']] ?: '<i>non renseigné</i>' }}</p>
                     </div>
                     <hr class="my-2">
 
                     <div class="flex justify-between">
                         <h3 class="text-sm font-medium text-gray-500">Catégorie d'entreprise</h3>
-                        <p class="mt-1">{!! $company['categorie_entreprise'] ?: '<i>non renseigné</i>' !!}</p>
+                        <p class="mt-1">{!! $company['categorie_entreprise'] ?: '<i>non renseigné</i>' !!} ({{ $ct[$company['categorie_entreprise']]  }})</p>
                     </div>
 
                     <hr class="my-2">

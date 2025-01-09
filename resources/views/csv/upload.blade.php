@@ -76,7 +76,7 @@
                                     errorDiv.style.display = 'none';
                                 }, 5000);
                             }
-                        }, 5000);
+                        }, 1000);
                     </script>
                 @endif
 
