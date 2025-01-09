@@ -7,6 +7,39 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * CsvController handles CSV file processing and data enrichment using the French Government Enterprise API.
+ * 
+ * This controller provides functionality to:
+ * - Display CSV upload form with mappable fields
+ * - Process uploaded CSV files containing SIREN numbers
+ * - Validate CSV structure and SIREN format
+ * - Enrich data by fetching additional company information
+ * - Generate enhanced CSV output with selected fields
+ */
+
+/**
+ * Display the CSV upload form with available field mappings.
+ * 
+ * @return \Illuminate\View\View
+ */
+
+/**
+ * Process the uploaded CSV file and enrich it with additional company data.
+ * 
+ * This method:
+ * 1. Validates the uploaded CSV file and selected fields
+ * 2. Reads and validates the CSV structure (single column of SIREN numbers)
+ * 3. For each SIREN, fetches company data from the API
+ * 4. Generates an enhanced CSV with requested company information
+ * 
+ * @param Request $request The HTTP request containing:
+ *                        - csv_file: The uploaded CSV file
+ *                        - selected_fields: Array of fields to include in output
+ * 
+ * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+ * @throws \Illuminate\Validation\ValidationException
+ */
 
 class CsvController extends Controller
 {
@@ -113,11 +146,6 @@ class CsvController extends Controller
                 }
             } catch (\Exception $e) {
                 Log::error("Erreur pour le SIREN $siren: " . $e->getMessage());
-                // Créer un tableau d'erreurs de la même taille que les champs sélectionnés
-                $output[] = array_merge(
-                    [$siren], 
-                    array_fill(0, count($request->selected_fields), 'Erreur')
-                );
             }
         }
 

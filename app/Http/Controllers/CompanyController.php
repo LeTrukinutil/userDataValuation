@@ -9,8 +9,34 @@ use App\Models\LegalCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * CompanyController handles company search and detailed information display.
+ * 
+ * This controller provides functionality to:
+ * - Search companies using the French Government Enterprise API
+ * - Display paginated search results
+ * - Show detailed company information
+ * - Load related data (NAF codes, legal categories, company types)
+ * - Handle company comments
+ */
 class CompanyController extends Controller
 {
+    /**
+     * Search companies based on user input.
+     * 
+     * This method:
+     * 1. Validates the search query
+     * 2. Calls the enterprise API with pagination
+     * 3. Stores results in session for detail view
+     * 4. Loads NAF codes for activity description
+     * 
+     * @param Request $request The HTTP request containing:
+     *                        - query: Search term (name, SIREN, address)
+     *                        - page: Page number for pagination
+     * 
+     * @return \Illuminate\View\View
+     * @throws \Exception When API call fails
+     */
     public function search(Request $request)
     {
         $query = $request->input('query');
@@ -54,7 +80,19 @@ class CompanyController extends Controller
         ]);
     }
 
-
+    /**
+     * Display detailed information for a specific company.
+     * 
+     * This method:
+     * 1. Retrieves company data from session storage
+     * 2. Loads related reference data (NAF, legal categories, types)
+     * 3. Fetches company comments
+     * 4. Displays comprehensive company information
+     * 
+     * @param string $siren Company's SIREN number
+     * 
+     * @return \Illuminate\View\View
+     */
     public function show(string $siren)
     {
         $currentPage = request()->input('page', 1);
