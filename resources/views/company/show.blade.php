@@ -58,7 +58,8 @@
 
                     <div class="flex justify-between">
                         <h3 class="text-sm font-medium text-gray-500">Activité principale (NAF/APE)</h3>
-                        <p class="mt-1">{{ $company['activite_principale'] ?: '<i>non renseigné</i>' }}</p>
+                        <p class="mt-1">{{ $naf_codes[str_replace('.', '', $company['activite_principale'])] }} - {{ $company['activite_principale'] ?: '<i>non renseigné</i>' }}</p>
+                        
                     </div>
                     <hr class="my-2">
 
@@ -143,7 +144,8 @@
 
                 <div class="flex justify-between">
                     <h3 class="text-lg font-medium text-gray-500">Activité principale de l'établissement</h3>
-                    <p class="mt-1">{{ $company['siege']['activite_principale'] }}</p>
+                    <p class="mt-1">{{ $company['siege']['activite_principale'] }} -
+                        {{ $naf_codes[str_replace('.', '', $company['siege']['activite_principale'])] }}</p>
                 </div>
 
                 <div class="flex justify-between">
@@ -198,11 +200,18 @@
                         </thead>
                         <tbody>
                             @foreach ($company['matching_etablissements'] as $etablissement)
+                                @php
+                                    $codeNaf = str_replace('.', '', $etablissement['activite_principale']);
+                                @endphp
+
                                 <tr class="border-b hover:bg-gray-50">
                                     <td class="py-3">
                                         <p class="text-blue-500">{{ $etablissement['siret'] }}</p>
                                     </td>
-                                    <td class="py-3 text-xs">{{ $etablissement['activite_principale'] }}</td>
+                                    <td class="py-3 text-xs break-words max-w-xs">
+                                        {{ $etablissement['activite_principale'] }} -
+                                        {{ strlen($codeNaf) === 5 ? $naf_codes[$codeNaf] : 'Ancien système de code NAF/Ape' }}
+                                    </td>
                                     <td class="py-3 text-xs">
                                         {{ $etablissement['adresse'] }}
                                         @if ($etablissement['est_siege'])
@@ -259,10 +268,10 @@
                         </div>
                         <div class="{{ $comment->isAuthor() ? 'text-right' : '' }}">
                             <p
-                            class="text-sm text-gray-700 {{ $comment->isAuthor() ? 'inline-block bg-blue-50 text-blue-800 px-4 py-2 rounded-lg' : 'inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded-lg' }}">
-                            {{ $comment->content }}
-                        </p>
-                        
+                                class="text-sm text-gray-700 {{ $comment->isAuthor() ? 'inline-block bg-blue-50 text-blue-800 px-4 py-2 rounded-lg' : 'inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded-lg' }}">
+                                {{ $comment->content }}
+                            </p>
+
                         </div>
                     </div>
                 @endforeach

@@ -3,7 +3,9 @@
 @section('title', 'Recherche d\'entreprises')
 
 @section('content')
+
 <div class="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <img src="{{ asset('img/mg.png') }}" alt="" class="h-80 absolute top-14">
     <div class="w-full max-w-3xl space-y-8">
         <!-- Page Title -->
         <div class="text-center">
@@ -13,6 +15,9 @@
             <p class="mt-2 text-gray-600">
                 Trouvez rapidement les informations dont vous avez besoin sur les entreprise françaises
             </p>
+            <b>
+                Vérifiez les informations légales publiques des entreprises, associations et services publics en France
+            </b>
         </div>
 
         <!-- Search Form -->

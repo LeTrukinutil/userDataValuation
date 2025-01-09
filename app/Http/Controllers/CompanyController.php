@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApeNafCode;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -35,6 +36,7 @@ class CompanyController extends Controller
             return back()->withErrors(['query' => 'Erreur lors de la recherche.']);
         }
 
+        $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();
         // Retourner les résultats avec pagination
         return view('company.results', [
             'results' => $results['results'] ?? [],  // Accéder à 'results' au lieu de 'items'
@@ -42,6 +44,7 @@ class CompanyController extends Controller
             'total_pages' => $total_pages, // Ne limite plus à 6 pages
             'query' => $query,
             'total_results' => $results['total_results'],
+            'naf_codes' => $naf_codes,
         ]);
     }
 
@@ -53,7 +56,8 @@ class CompanyController extends Controller
         if (!$company) {
             return back()->withErrors(['siren' => 'Entreprise non trouvée.']);
         }
+        $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();
         $comments = Comment::where('siren', $company['siren'])->get();
-        return view('company.show', ['company' => $company, 'comments' => $comments]);
+        return view('company.show', ['company' => $company, 'comments' => $comments, 'naf_codes' => $naf_codes]);
     }
 }

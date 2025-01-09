@@ -33,7 +33,7 @@
                 @if (!empty($results))
                     @forelse ($results as $company)
                         @php
-                            $label = App\Models\Code::getLabel($code);
+                            
                         @endphp
                         <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
                             <h2 class="text-xl font-bold text-gray-800">
@@ -53,11 +53,11 @@
                             <div class="flex items-center mt-2 text-sm text-gray-700">
                                 <i class="fas fa-cogs mr-2"></i>
                                 <span><strong>Code NAF / APE :</strong>
-                                    {{ $company['siege']['activite_principale'] ?? 'Non renseigné' }}{{ $label }}</span>
+                                    {{ $company['siege']['activite_principale'] ?? 'Non renseigné' }}</span>
                             </div>
                             <div class="mt-2 text-sm text-gray-600">
                                 <strong>Description : </strong>
-                                {{ $company['siege']['activite_principale'] == '43.22B' ? 'Travaux de construction spécialisés dans les activités de gros œuvre.' : 'Description non disponible.' }}
+                                {{ $naf_codes[str_replace('.', '', $company['siege']['activite_principale'])]}}
                             </div>
 
                             <div class="mt-4">
