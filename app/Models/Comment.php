@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Comment
@@ -46,5 +47,10 @@ class Comment extends Model
 	public function user()
 	{
 		return $this->belongsTo(User::class);
+	}
+
+	// Return whether the user is the author of this comment or not
+	public function isAuthor(){
+		return $this->user_id === Auth::user()->id;
 	}
 }

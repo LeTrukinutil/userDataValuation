@@ -243,21 +243,31 @@
             <div class="mt-4 space-y-4">
                 @foreach ($comments as $comment)
                     <div class="border-b pb-4">
-                        <div class="flex items-center mb-2">
-                            <div class="flex-shrink-0">
-                                <!-- Vous pouvez personnaliser l'image de l'utilisateur ici -->
-                                <img src="{{ asset('img/default-avatar.png') }}" alt="Avatar"
-                                    class="h-8 w-8 rounded-full">
+                        <div class="flex items-start mb-2 {{ $comment->isAuthor() ? 'justify-end' : '' }}">
+                            <div class="{{ $comment->isAuthor() ? 'ml-3 order-last' : 'mr-3' }}">
+                                <i class="fa-solid fa-user text-gray-600"></i>
                             </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-800">{{ $comment->user->name }}</p>
+                            <div
+                                class="{{ $comment->isAuthor() ? 'text-right' : 'text-left' }} {{ $comment->isAuthor() ? 'ml-3' : '' }}">
+                                <p class="text-sm font-medium text-gray-800">
+                                    {{ $comment->isAuthor() ? 'Moi' : $comment->user->name }}
+                                </p>
                                 <p class="text-xs text-gray-500">
-                                    {{ \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y à H:i') }}</p>
+                                    {{ \Carbon\Carbon::parse($comment->created_at)->format('d/m/Y à H:i') }}
+                                </p>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-700">{{ $comment->content }}</p>
+                        <div class="{{ $comment->isAuthor() ? 'text-right' : '' }}">
+                            <p
+                            class="text-sm text-gray-700 {{ $comment->isAuthor() ? 'inline-block bg-blue-50 text-blue-800 px-4 py-2 rounded-lg' : 'inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded-lg' }}">
+                            {{ $comment->content }}
+                        </p>
+                        
+                        </div>
                     </div>
                 @endforeach
+
+
             </div>
         </div>
 
@@ -272,7 +282,8 @@
                         placeholder="Votre commentaire..." required></textarea>
                 </div>
                 <div class="mt-4 text-right">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Ajouter un commentaire</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Ajouter
+                        un commentaire</button>
                 </div>
             </form>
         </div>

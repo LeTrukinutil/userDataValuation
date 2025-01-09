@@ -11,7 +11,7 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none">
                         <i
                             class="fa-solid fa-magnifying-glass text-gray-400 text-lg group-hover:text-blue-500 transition-colors duration-200"></i>
-                    </div>  
+                    </div>
                     <input type="text" name="query" id="search"
                         class="w-full pl-16 pr-32 py-4 text-lg border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all duration-200 bg-white shadow-sm hover:shadow-md"
                         placeholder="Nom, adresse, SIRET/SIREN..." value="{{ request('query') }}" required>
@@ -32,12 +32,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @if (!empty($results))
                     @forelse ($results as $company)
+                        @php
+                            $label = App\Models\Code::getLabel($code);
+                        @endphp
                         <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
                             <h2 class="text-xl font-bold text-gray-800">
                                 {{ $company['nom_raison_sociale'] ?? 'Nom non disponible' }}
                             </h2>
                             <p class="text-gray-600">{{ $company['siege']['adresse'] ?? 'Adresse non disponible' }}</p>
-                            <p class="text-sm text-gray-500">SIRET : {{ $company['siege']['siret'] ?? 'N/A' }}</p>
+                            <p class="text-sm text-gray-500">SIREN : {{ $company['siren'] ?? 'N/A' }}</p>
 
                             @if (isset($company['dirigeants']) && count($company['dirigeants']) > 0)
                                 <div class="flex items-center mt-2 text-sm text-gray-700">
@@ -50,7 +53,7 @@
                             <div class="flex items-center mt-2 text-sm text-gray-700">
                                 <i class="fas fa-cogs mr-2"></i>
                                 <span><strong>Code NAF / APE :</strong>
-                                    {{ $company['siege']['activite_principale'] ?? 'Non renseigné' }}</span>
+                                    {{ $company['siege']['activite_principale'] ?? 'Non renseigné' }}{{ $label }}</span>
                             </div>
                             <div class="mt-2 text-sm text-gray-600">
                                 <strong>Description : </strong>
@@ -58,13 +61,14 @@
                             </div>
 
                             <div class="mt-4">
-                                <a href="{{ route('company.show', ['siren' => $company['siren']]) }}" 
-                                   class="text-blue-500 underline hover:text-blue-600 text-sm font-medium transition-all duration-200">
-                                    Voir les établissements correspondants ({{ count($company['matching_etablissements'])}})
+                                <a href="{{ route('company.show', ['siren' => $company['siren']]) }}"
+                                    class="text-blue-500 underline hover:text-blue-600 text-sm font-medium transition-all duration-200">
+                                    Voir les établissements correspondants
+                                    ({{ count($company['matching_etablissements']) }})
                                 </a>
-                                
+
                             </div>
-                            
+
                         </div>
                     @empty
                         <p class="text-center text-gray-500">Aucun résultat trouvé.</p>

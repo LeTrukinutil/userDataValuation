@@ -26,4 +26,9 @@ class ApeNafCode extends Model
 	protected $fillable = [
 		'label'
 	];
+
+	// find the label of the code
+	static function getLabel($code){
+		return self::where('code', $code)->value('label');
+	}
 }

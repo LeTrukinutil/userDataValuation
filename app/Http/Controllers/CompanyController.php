@@ -19,6 +19,7 @@ class CompanyController extends Controller
             'q' => $query,
             'per_page' => 6, // Nombre de résultats par page
             'page' => $request->input('page', 1), // Page actuelle (par défaut 1)
+            'limite_matching_etablissements' => 100,
         ];
 
         // Appeler l'API
@@ -52,8 +53,7 @@ class CompanyController extends Controller
         if (!$company) {
             return back()->withErrors(['siren' => 'Entreprise non trouvée.']);
         }
-        $comments = Comment::where('siren', $company['siren']);
-        dd($comments);
+        $comments = Comment::where('siren', $company['siren'])->get();
         return view('company.show', ['company' => $company, 'comments' => $comments]);
     }
 }
