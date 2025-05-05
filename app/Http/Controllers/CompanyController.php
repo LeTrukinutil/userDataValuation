@@ -50,14 +50,12 @@ class CompanyController extends Controller
             'page' => $request->input('page', 1), // Page actuelle (par défaut 1)
             'limite_matching_etablissements' => 100,
         ];
-
         // Appeler l'API
         try {
             $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
-
             if ($response->successful()) {
                 $results = $response->json();
-            $total_results = isset($results['total_results']) ? $results['total_results'] : 0;
+                $total_results = isset($results['total_results']) ? $results['total_results'] : 0;
                 $total_results = $results['total_results'] ?? 0;
                 $total_pages = ceil($total_results / 6); // Calcul des pages totales
                 session(['search_results_page_' . $params['page'] => $results['results'] ?? []]);
@@ -65,6 +63,7 @@ class CompanyController extends Controller
                 return back()->withErrors(['query' => 'Erreur lors de la recherche.']);
             }
         } catch (\Exception $e) {
+            dd($e);
             return back()->withErrors(['query' => 'Erreur lors de la recherche: ' . $e->getMessage()]);
         }
 
@@ -103,13 +102,13 @@ class CompanyController extends Controller
         }
 
         $comments = Comment::where('siren', $company['siren'])->get();
-        $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();   
+        $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();
         $fj = LegalCategory::all()->pluck('label', 'code')->toArray();
         $ct = CompanyType::all()->pluck('label', 'code')->toArray();
 
         return view('company.show', [
-            'company' => $company, 
-            'comments' => $comments, 
+            'company' => $company,
+            'comments' => $comments,
             'naf_codes' => $naf_codes,
             'fj' => $fj,
             'ct' => $ct,
