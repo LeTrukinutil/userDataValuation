@@ -20,21 +20,24 @@ Route::middleware('auth')->group(function () {
 
     // Company routes
     Route::get('/search', [CompanyController::class, 'search'])->name('search');
-    Route::get('/', function(){
+    Route::get('/', function () {
         return view('company.research');
     })->name('dashboard');
+
     Route::get('/company/{siren}', [CompanyController::class, 'show'])->name('company.show');
     Route::post('/company/{siren}/comments', [CommentsController::class, 'store'])->name('comment.store');
+
+    Route::post('/company/{siren}/favourites', [CompanyController::class, 'toggleToFavourites'])->name('company.favourites');
 
     // CSV routes
     Route::get('/csv-upload', [CsvController::class, 'show'])->name('csv.upload');
     Route::post('/csv-upload', [CsvController::class, 'dataCompletion'])->name('csv.process');
 
     // Logout route
-    Route::get('/logout', function(){
+    Route::get('/logout', function () {
         Auth::logout();
         return redirect('/');
     })->name('logout');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

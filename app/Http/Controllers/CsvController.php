@@ -77,7 +77,7 @@ class CsvController extends Controller
         ]); //  globalement, je sais pas pourquoi, mais je n'arrive pas à les afficher 
 
         $originalName = pathinfo($request->file('csv_file')->getClientOriginalName(), PATHINFO_FILENAME);
-        
+
         // Read CSV file
         $file = $request->file('csv_file');
         $path = $file->getRealPath();
@@ -107,13 +107,12 @@ class CsvController extends Controller
 
 
         // Prepare output data with descriptive headers
-            $headers = array_merge(['SIREN'], $request->selected_fields);
+        $headers = array_merge(['SIREN'], $request->selected_fields);
         $output = [$headers]; // Start with headers as first row
 
         // Process each row
         foreach (array_slice($data, 1) as $row) {
             $siren = $row[0];
-
             try {
                 // Call API
                 $params = ['q' => $siren];
@@ -125,14 +124,14 @@ class CsvController extends Controller
                     $companyData = [$siren]; // Start with SIREN
                     // Add selected fields
                     foreach ($request->selected_fields as $field) {
-                        $companyData[] = match($field) {
+                        $companyData[] = match ($field) {
                             'nom_complet' => $company['nom_complet'] ?? 'N/A',
                             'adresse' => $company['siege']['adresse'] ?? 'N/A',
                             'code_postal' => $company['siege']['code_postal'] ?? 'N/A',
                             'activite_principale' => $company['siege']['activite_principale'] ?? 'N/A',
                             'effectif' => $company['tranche_effectif_salarie'] ?? 'N/A',
                             'date_creation' => $company['date_creation'] ?? 'N/A',
-                            'dirigeant' => !empty($company['dirigeants']) 
+                            'dirigeant' => !empty($company['dirigeants'])
                                 ? ($company['dirigeants'][0]['nom'] ?? '') . ' ' . ($company['dirigeants'][0]['prenoms'] ?? '')
                                 : 'N/A',
                             'categorie_entreprise' => $company['categorie_entreprise'] ?? 'N/A',
@@ -156,7 +155,7 @@ class CsvController extends Controller
         fclose($file);
 
         // Return download response
-       return response()->download($tempFile, $originalName . '_complete.csv', [
+        return response()->download($tempFile, $originalName . '_complete.csv', [
             'Content-Type' => 'text/csv',
         ])->deleteFileAfterSend();
     }

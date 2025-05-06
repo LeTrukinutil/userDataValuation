@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\ApeNafCode;
 use App\Models\Comment;
+use App\Models\Company;
 use App\Models\CompanyType;
 use App\Models\LegalCategory;
+use App\Models\User;
+use App\Models\UserFavouritesCompany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -50,15 +54,29 @@ class CompanyController extends Controller
             'page' => $request->input('page', 1), // Page actuelle (par défaut 1)
             'limite_matching_etablissements' => 100,
         ];
+
+        // Variables pour les résultats
+        $results = [];
+        $total_results = 0;
+        $total_pages = 0;
+
         // Appeler l'API
         try {
             $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
             if ($response->successful()) {
-                $results = $response->json();
-                $total_results = isset($results['total_results']) ? $results['total_results'] : 0;
-                $total_results = $results['total_results'] ?? 0;
+                $api_results = $response->json();
+                $total_results = $api_results['total_results'] ?? 0;
+                $results = $api_results['results'] ?? [];
                 $total_pages = ceil($total_results / 6); // Calcul des pages totales
-                session(['search_results_page_' . $params['page'] => $results['results'] ?? []]);
+
+                // Vérifier et marquer les favoris
+                $user_id = Auth::id();
+                foreach ($results as &$company) {
+                    $company['is_favourite'] = Company::isFavourite($company['siren'], $user_id);
+                }
+
+                // Stocker les résultats en session pour pagination
+                session(['search_results_page_' . $params['page'] => $results]);
             } else {
                 return back()->withErrors(['query' => 'Erreur lors de la recherche.']);
             }
@@ -68,13 +86,14 @@ class CompanyController extends Controller
         }
 
         $naf_codes = ApeNafCode::all()->pluck('label', 'code')->toArray();
+
         // Retourner les résultats avec pagination
         return view('company.results', [
-            'results' => $results['results'] ?? [],  // Accéder à 'results' au lieu de 'items'
+            'results' => $results,
             'current_page' => $params['page'],
-            'total_pages' => $total_pages, // Ne limite plus à 6 pages
+            'total_pages' => $total_pages,
             'query' => $query,
-            'total_results' => $results['total_results'] ?? 0,
+            'total_results' => $total_results,
             'naf_codes' => $naf_codes,
         ]);
     }
@@ -113,5 +132,64 @@ class CompanyController extends Controller
             'fj' => $fj,
             'ct' => $ct,
         ]);
+    }
+
+    public function toggleToFavourites(Request $request, string $siren)
+    {
+        $company = Company::find($siren);
+        if (!$company) {
+            $params = ['q' => $siren];
+            $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
+            if ($response->successful()) {
+                $apiCompany  = $response->json()['results'][0];
+                $company = Company::create([
+                    'siren' => $apiCompany['siren'],
+                    'name' => $apiCompany['nom_complet'] ?? 'Default Name',
+                ]);
+            } else {
+                return back()->withErrors(['error' => 'Company not found.']);
+            }
+        }
+
+        $userId = Auth::id();
+
+        try {
+            $existing = UserFavouritesCompany::where('user_id', $userId)
+                ->where('siren', $siren)
+                ->first();
+
+            if ($existing) {
+                $existing->delete();
+                return response()->json([
+                    'success' => true,
+                    'is_favourite' => false,
+                    'message' => 'Company removed from favourites.'
+                ]);
+            } else {
+                UserFavouritesCompany::create([
+                    'user_id' => $userId,
+                    'siren' => $siren,
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'is_favourite' => true,
+                    'message' => 'Company added to favourites.'
+                ]);
+            }
+        } catch (\Exception $e) {
+            dd($e);
+            return response()->json([
+                'success' => false,
+                'error' => $e
+            ], 500);
+        }
+    }
+
+
+    public function removeFromFavourites(Request $request, string $siren)
+    {
+        // Logic to remove company from user's favourites
+        // This is a placeholder and should be replaced with actual logic
+        return response()->json(['message' => 'Company removed from favourites.']);
     }
 }

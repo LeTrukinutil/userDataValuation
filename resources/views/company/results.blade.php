@@ -29,19 +29,26 @@
                 </p>
             </div>
 
-            <!-- Company list and their informations -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @if (!empty($results))
                     @forelse ($results as $company)
                         <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                            <div class="flex justify-between items-start">
-                                <h2 class="text-xl font-bold text-gray-800">
+                            <div class="flex justify-between items-center">
+                                <h2 class="text-xl font-bold text-gray-800 flex items-center">
                                     {{ $company['nom_raison_sociale'] ?? 'Nom non disponible' }}
                                 </h2>
-                                <button onclick="toggleFavorite(this, '{{ $company['siren'] }}')"
-                                    class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                                    <i class="fa-regular fa-star"></i>
-                                </button>
+                                <!-- Etoile vide à droite du nom -->
+                                <form class="favourite-toggle-form inline" data-siren="{{ $company['siren'] }}">
+                                    @csrf
+                                    <button type="button" class="favourite-toggle-btn text-xl">
+                                        @if ($company['is_favourite'])
+                                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                                        @else
+                                            <i class="far fa-star text-gray-400"></i>
+                                        @endif
+                                    </button>
+                                </form>
+
                             </div>
                             <p class="text-gray-600">{{ $company['siege']['adresse'] ?? 'Adresse non disponible' }}</p>
                             <p class="text-sm text-gray-500">SIREN : {{ $company['siren'] ?? 'N/A' }}</p>
@@ -77,6 +84,8 @@
                     <p class="text-center text-gray-500">Aucun résultat trouvé.</p>
                 @endif
             </div>
+
+
 
             <!-- Pagination -->
             <div class="flex justify-center mt-6">

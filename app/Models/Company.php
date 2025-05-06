@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Company
@@ -40,5 +41,12 @@ class Company extends Model
 	public function comments()
 	{
 		return $this->hasMany(Comment::class, 'siren');
+	}
+
+	static function isFavourite($siren)
+	{
+		return UserFavouritesCompany::where('user_id', Auth::user()->id)
+			->where('siren', $siren)
+			->exists();
 	}
 }

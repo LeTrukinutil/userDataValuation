@@ -50,7 +50,8 @@ class Comment extends Model
 	}
 
 	// Return whether the user is the author of this comment or not
-	public function isAuthor(){
+	public function isAuthor()
+	{
 		return $this->user_id === Auth::user()->id;
 	}
 }
