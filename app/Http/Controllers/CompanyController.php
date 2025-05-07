@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\Company;
 use App\Models\CompanyType;
 use App\Models\LegalCategory;
+use App\Models\SearchHistory;
 use App\Models\User;
 use App\Models\UserFavouritesCompany;
 use Illuminate\Http\Request;
@@ -46,6 +47,13 @@ class CompanyController extends Controller
         $query = $request->input('query');
         if (!$query) {
             return back()->withErrors(['query' => 'Veuillez entrer un terme de recherche.']);
+        }
+        try {
+            SearchHistory::create([
+                'user_id' => Auth::id(),
+                'search_query' => $query,
+            ]);
+        } catch (\Exception $e) {
         }
 
         $params = [
@@ -113,9 +121,9 @@ class CompanyController extends Controller
      */
     public function show(string $siren)
     {
-        $currentPage = request()->input('page', 1);
-        $searchResults = session('search_results_page_' . $currentPage, []);
-        $company = collect($searchResults)->firstWhere('siren', $siren);
+        $params = ['q' => $siren];
+        $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
+        $company = $response->json()['results'][0];
         if (!$company) {
             return back()->withErrors(['siren' => 'Entreprise non trouvée.']);
         }
@@ -134,62 +142,19 @@ class CompanyController extends Controller
         ]);
     }
 
-    public function toggleToFavourites(Request $request, string $siren)
+
+    public function deleteSearchHistory(Request $request, $id)
     {
-        $company = Company::find($siren);
-        if (!$company) {
-            $params = ['q' => $siren];
-            $response = Http::get('https://recherche-entreprises.api.gouv.fr/search', $params);
-            if ($response->successful()) {
-                $apiCompany  = $response->json()['results'][0];
-                $company = Company::create([
-                    'siren' => $apiCompany['siren'],
-                    'name' => $apiCompany['nom_complet'] ?? 'Default Name',
-                ]);
-            } else {
-                return back()->withErrors(['error' => 'Company not found.']);
-            }
+        $history = SearchHistory::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$history) {
+            return response()->json(['success' => false, 'message' => 'Entrée non trouvée'], 404);
         }
 
-        $userId = Auth::id();
+        $history->delete();
 
-        try {
-            $existing = UserFavouritesCompany::where('user_id', $userId)
-                ->where('siren', $siren)
-                ->first();
-
-            if ($existing) {
-                $existing->delete();
-                return response()->json([
-                    'success' => true,
-                    'is_favourite' => false,
-                    'message' => 'Company removed from favourites.'
-                ]);
-            } else {
-                UserFavouritesCompany::create([
-                    'user_id' => $userId,
-                    'siren' => $siren,
-                ]);
-                return response()->json([
-                    'success' => true,
-                    'is_favourite' => true,
-                    'message' => 'Company added to favourites.'
-                ]);
-            }
-        } catch (\Exception $e) {
-            dd($e);
-            return response()->json([
-                'success' => false,
-                'error' => $e
-            ], 500);
-        }
-    }
-
-
-    public function removeFromFavourites(Request $request, string $siren)
-    {
-        // Logic to remove company from user's favourites
-        // This is a placeholder and should be replaced with actual logic
-        return response()->json(['message' => 'Company removed from favourites.']);
+        return response()->json(['success' => true]);
     }
 }

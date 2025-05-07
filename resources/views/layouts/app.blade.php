@@ -30,6 +30,9 @@
                         <i class="fas fa-user text-xl"></i>
                         <span class="font-medium text-base">{{ Auth::user()->name }}</span>
                     </a>
+                    <a href="{{ route('favourites.index') }}" class="text-gray-700 hover:text-blue-500">
+                        <i class="fa-solid fa-bookmark"></i>
+                    </a>
                     <a href="/logout" class="text-gray-700 hover:text-blue-500">
                         <i class="fas fa-sign-out-alt text-xl"></i>
                     </a>
